@@ -1,0 +1,14 @@
+---
+- name: "sshd: Configuring OpenSSH Server"
+  become: yes
+  ansible.builtin.blockinfile:
+    path: "/etc/ssh/sshd_config"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK: role=unmanaged"
+    insertafter: EOF
+    block: |
+      Match Address !{{ ansible_controller_address }},!127.0.0.0/8,*
+      DenyUsers ansible
+    validate: /usr/sbin/sshd -t -f %s
+  notify:
+    - "services: Reloading OpenSSH Server service"
+...

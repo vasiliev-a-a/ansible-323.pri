@@ -1,0 +1,15 @@
+/var/log/vsftpd.log /var/log/xferlog {
+	rotate 14
+	daily
+	missingok
+	create
+	nocompress
+	dateext
+	dateformat -%d%m%Y
+	dateyesterday
+	sharedscripts
+        postrotate
+                /usr/bin/systemctl reload {{ vsftpd_service }}
+		/usr/lib/rsyslog/rsyslog-rotate
+        endscript
+}

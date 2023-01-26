@@ -1,0 +1,6 @@
+---
+- name: "checks: Are we using `/etc/rsyslog.conf` ?"
+  stat:
+    path: "/etc/rsyslog.conf"
+  register: stat_rsyslog_conf
+...

@@ -1,0 +1,30 @@
+---
+- name: "undo: Uninstalling packages on `cluster_nodes`"
+  become: yes
+  ansible.builtin.apt:
+    name: "{{ node_packages }}"
+    state: absent
+    update_cache: no
+    purge: yes
+  when:
+    - inventory_hostname in cluster_nodes
+    - (ansible_os_family | lower) == 'debian'
+
+- name: "undo: Uninstalling packages on `cluster_witness`"
+  become: yes
+  ansible.builtin.apt:
+    name: "{{ witness_packages }}"
+    state: absent
+    update_cache: no
+    purge: yes
+  when:
+    - cluster_witness is defined
+    - inventory_hostname == cluster_witness
+    - (ansible_os_family | lower) == 'debian'
+
+- name: "undo: Deleting configurations"
+  become: yes
+  ansible.builtin.file:
+    path: '/etc/corosync'
+    state: absent
+...

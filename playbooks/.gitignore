@@ -1,0 +1,6 @@
+# Ignoring these:
+*
+
+# ... but not these:
+!bootstrap.yml
+!.gitignore

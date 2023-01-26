@@ -1,0 +1,9 @@
+---
+packages:
+  - "vsftpd"
+  - "libpam-pwdfile"
+vsftpd_service: "vsftpd.service"
+pam_pwdfile_module: "pam_pwdfile.so"
+vsftpd_pam_config_file: "/etc/pam.d/vsftpd"
+rsyslog_service: "rsyslog.service"
+...

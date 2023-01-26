@@ -1,0 +1,13 @@
+---
+- name: "services: Restarting `vsftpd` service"
+  become: yes
+  ansible.builtin.service:
+    name: "{{ vsftpd_service }}"
+    state: restarted
+
+- name: "services: Restarting `rsyslog` service"
+  become: yes
+  ansible.builtin.service:
+    name: "{{ rsyslog_service }}"
+    state: restarted
+...

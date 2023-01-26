@@ -1,0 +1,14 @@
+---
+ftp_root: "/srv/ftproot"
+ftp_user:
+  name: ftp-user
+  uid: 200
+ftp_group:
+  name: ftp-users
+  gid: 200
+vsftpd_rsa_cert_file: "/etc/vsftpd.conf.d/cert.pem"
+vsftpd_pwdfile_file: "/etc/vsftpd.conf.d/pwdfile"
+vsftpd_listen_port: 21
+vsftpd_pasv_min_port: 4000
+vsftpd_pasv_max_port: 5000
+...

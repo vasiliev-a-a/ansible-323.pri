@@ -1,0 +1,6 @@
+---
+- name: "Applying generic linux configuration"
+  hosts: linux
+  roles:
+    - linux
+

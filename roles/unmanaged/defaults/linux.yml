@@ -1,0 +1,4 @@
+---
+ansible_account_user: "ansible"
+ansible_account_group: "users"
+...

@@ -1,0 +1,20 @@
+---
+- name: "services: Restarting Corosync service"
+  become: yes
+  ansible.builtin.service:
+    name: "{{ corosync_service }}"
+    state: restarted
+  notify: "services: Restarting Corosync QDevice service"
+
+- name: "services: Restarting Corosync QDevice service"
+  become: yes
+  ansible.builtin.service:
+    name: "{{ corosync_qdevice_service }}"
+    state: restarted
+
+- name: "services: Restarting Corosync QDevice Network service"
+  become: yes
+  ansible.builtin.service:
+    name: "{{ corosync_qnetd_service }}"
+    state: restarted
+...

@@ -1,0 +1,42 @@
+---
+- name: "checks: Is `ftp_root` defined?"
+  assert:
+    that: ftp_root is defined
+    fail_msg: "`ftp_root` must be specified."
+  delegate_to: localhost
+  run_once: yes
+
+- name: "checks: Is `ftp_users` a list?"
+  assert:
+    that:
+      - ftp_users is iterable
+      - ( ftp_users is string ) is false
+    fail_msg: "`ftp_users` must be defined as a list, even if it contains a single user."
+  delegate_to: localhost
+  run_once: yes
+  when: ftp_users is defined
+
+- name: "checks: Are elements of the `ftp_users` have valid format?"
+  assert:
+    that:
+      - item is mapping
+      - item['name'] is defined
+      - item['password'] is defined
+      - item['role'] is defined
+      - item['role'] in ['user','admin']
+    fail_msg: "`{{ item }}` has wrong format. Each user must be defined as a dictionary with the `name`, `password` and `role` fileds. `role` must be one of ['user', 'admin']."
+  loop: "{{ ftp_users }}"
+  delegate_to: localhost
+  run_once: yes
+  when: ftp_users is defined
+
+- name: "checks: Are we using `/etc/rsyslog.d` ?"
+  stat:
+    path: "/etc/rsyslog.d"
+  register: stat_rsyslog_d
+
+- name: "checks: Are we using `/etc/logrotate.d` ?"
+  stat:
+    path: "/etc/logrotate.d"
+  register: stat_logrotate_d
+...

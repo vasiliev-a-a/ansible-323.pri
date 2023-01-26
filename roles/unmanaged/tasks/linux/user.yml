@@ -1,0 +1,36 @@
+---
+- name: "user: Creating a user to be used by Ansible"
+  become: yes
+  ansible.builtin.user:
+    name: "{{ ansible_account_user }}"
+    comment: "Ansible service account"
+    create_home: yes
+    group: "{{ ansible_account_group }}"
+    password_lock: yes
+    uid: 1991
+    shell: /usr/bin/bash
+  register: user_result
+
+- name: "user: Creating ~/.ssh directory"
+  become: yes
+  ansible.builtin.file:
+    path: "{{ user_result['home'] }}/.ssh"
+    state: directory
+    mode: 0700
+    group: "{{ ansible_account_group }}"
+    owner: "{{ ansible_account_user }}"
+
+- name: "user: Setting up auhtorized_keys"
+  become: yes
+  vars:
+    authorized_key_content: "{{ lookup('pipe','cut -d\" \" -f1,2 ~/.ssh/id_rsa.pub') }}"
+  ansible.builtin.blockinfile:
+    block: "{{ authorized_key_content }} {{ ansible_account_user }}@{{ ansible_controller_address }}"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK: role=unmanaged"
+    insertafter: EOF
+    create: true
+    owner: "{{ ansible_account_user }}"
+    group: "{{ ansible_account_group }}"
+    mode: 0600
+    path: "{{ user_result['home'] }}/.ssh/authorized_keys"
+...

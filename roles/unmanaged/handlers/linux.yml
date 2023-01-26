@@ -1,0 +1,7 @@
+---
+- name: "services: Reloading OpenSSH Server service"
+  become: yes
+  ansible.builtin.service:
+    name: "{{ sshd_service }}"
+    state: reloaded
+...

@@ -1,0 +1,28 @@
+---
+- name: "directories: Creating drop-in configuration directory (/etc/vsftpd.conf.d/)"
+  become: yes
+  ansible.builtin.file:
+    path: "/etc/vsftpd.conf.d"
+    state: directory
+    mode: "0750"
+
+- name: "directories: Creating FTP root ({{ ftp_root }})"
+  become: yes
+  ansible.builtin.file:
+    path: "{{ ftp_root }}"
+    state: directory
+    mode: "0750"
+    owner: root
+    group: "{{ ftp_group['name'] }}"
+
+- name: "directories: Creating per ftp_users chroot directory ({{ ftp_root }}/$USER) "
+  become: yes
+  ansible.builtin.file:
+    path: "{{ ftp_root }}/{{ item['name'] }}"
+    state: directory
+    mode: "0770"
+    owner: "{{ ftp_user['name']}}"
+    group: "{{ ftp_group['name']}}"
+  loop: "{{ ftp_users }}"
+  when: item['role'] == 'user'
+...

@@ -1,0 +1,14 @@
+---
+- import_tasks: "checks.yml"
+
+- name: "Including OS specific variables"
+  include_vars:
+    file: "{{ ansible_os_family | lower }}.yml"
+
+- import_tasks: "linux/login-defs.yml"
+- import_tasks: "linux/pam-session.yml"
+- import_tasks: "linux/user.yml"
+- import_tasks: "linux/sshd-config.yml"
+- import_tasks: "linux/sudoers.yml"
+- import_tasks: "linux/packages.yml"
+...
