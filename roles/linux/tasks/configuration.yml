@@ -1,0 +1,35 @@
+---
+- name: "config: Setting up base config files."
+  become: yes
+  ansible.builtin.copy:
+    dest: "/etc/"
+    src: "etc/"
+    mode: 0644
+
+- name: "config: Enabling high precision timestamps for `rsyslog`."
+  become: yes
+  ansible.builtin.lineinfile:
+    path: "/etc/rsyslog.conf"
+    regexp: '\$ActionFileDefaultTemplate.*RSYSLOG_TraditionalFileFormat'
+    state: absent
+  when: stat_rsyslog_conf['stat']['exists']
+  notify: "services: Restarting `rsyslog` service"
+
+- name: "config: Getting existing user profiles"
+  become: yes
+  ansible.builtin.find:
+    path: "/home"
+    file_type: directory
+  register: homes
+
+- name: "config: Copying default configurations to the user profiles."
+  become: yes
+  ansible.builtin.command:
+    cmd: "rsync --owner --group --ignore-existing --recursive --chown={{ item }}:users /etc/skel/ ~{{ item }}"
+  loop: "{{ homes.files | map(attribute='pw_name') }}"
+
+- name: "config: Copying default configurations to the root home"
+  become: yes
+  ansible.builtin.command:
+    cmd: "rsync --owner --group --ignore-existing --recursive --chown=root:root /etc/skel/ /root"
+...

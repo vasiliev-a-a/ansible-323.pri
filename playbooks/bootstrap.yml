@@ -1,0 +1,10 @@
+- name: Prepare new nodes to be managed by Ansible
+  hosts: unmanaged
+  tasks:
+    - include_role:
+        name: unmanaged
+        defaults_from: linux
+        handlers_from: linux
+        tasks_from: linux
+        vars_from: linux
+      when: (ansible_system | lower ) == 'linux'

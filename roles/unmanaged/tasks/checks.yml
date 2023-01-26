@@ -1,0 +1,9 @@
+---
+- name: "checks: Is `ansible_controller_address` defined?"
+  assert:
+    fail_msg: "Controller node address must be defined. Provide value for 'ansible_controller_address' in your preffered way."
+    that:
+      - ansible_controller_address is defined
+  run_once: yes
+  delegate_to: localhost
+...

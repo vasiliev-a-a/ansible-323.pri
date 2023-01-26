@@ -1,0 +1,73 @@
+---
+- name: "config: Generating the /etc/corosync/corosync.conf"
+  become: yes
+  ansible.builtin.template:
+    dest: '/etc/corosync/corosync.conf'
+    mode: 0644
+    src: "./corosync.conf.j2"
+  notify: "services: Restarting Corosync service"
+  when: inventory_hostname in cluster_nodes
+
+- name: "config: Generating an authkey on the first node"
+  become: yes
+  ansible.builtin.command: "corosync-keygen"
+  delegate_to: "{{ cluster_nodes | first }}"
+  run_once: yes
+  notify: "services: Restarting Corosync service"
+
+- name: "config: Fetching the generated authkey"
+  become: yes
+  ansible.builtin.fetch:
+    src: "/etc/corosync/authkey"
+    dest: "/tmp/authkey"
+    flat: yes
+    force: yes
+  delegate_to: "{{ cluster_nodes | first }}"
+  run_once: yes
+
+- name: "config: Distributing the generated authkey"
+  become: yes
+  ansible.builtin.copy:
+    src: "/tmp/authkey"
+    dest: "/etc/corosync/authkey"
+    mode: 0400
+  when:
+    - inventory_hostname != (cluster_nodes | first)
+    - inventory_hostname in cluster_nodes
+  notify: 'services: Restarting Corosync service'
+
+- name: "config: Enabling Corosync service"
+  become: yes
+  ansible.builtin.service:
+    name: "{{ corosync_service }}"
+    enabled: yes
+  when: inventory_hostname in cluster_nodes
+
+- name: "config: Enabling Corosync QDevice service"
+  become: yes
+  ansible.builtin.service:
+    name: "{{ corosync_qdevice_service }}"
+    enabled: yes
+  when:
+    - inventory_hostname in cluster_nodes
+    - cluster_witness is defined
+
+- name: "config: Enabling and starting Corosync QNet Device service"
+  become: yes
+  ansible.builtin.service:
+    name: "{{ corosync_qnetd_service }}"
+    enabled: yes
+    state: started
+  when:
+    - cluster_witness is defined
+    - inventory_hostname == cluster_witness
+
+- name: "config: Disabling Corosync QDevice service"
+  become: yes
+  ansible.builtin.service:
+    name: "{{ corosync_qdevice_service }}"
+    enabled: no
+  when:
+    - inventory_hostname in cluster_nodes
+    - cluster_witness_address is undefined
+...

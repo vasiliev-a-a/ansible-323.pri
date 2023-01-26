@@ -1,0 +1,15 @@
+---
+- name: "login.defs: Disabling USERGROUPS"
+  become: yes
+  ansible.builtin.lineinfile:
+    line: "USERGROUPS_ENAB NO"
+    path: "/etc/login.defs"
+    regexp: '^USERGROUPS_ENAB[\ \t]+'
+
+- name: "login.defs: Setting up default UMASK"
+  become: yes
+  ansible.builtin.lineinfile:
+    line: "UMASK 0077"
+    path: "/etc/login.defs"
+    regexp: '^UMASK[\ \t]+'
+...

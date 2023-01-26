@@ -1,0 +1,5 @@
+auth		required	{{ pam_pwdfile_module }} pwdfile={{ vsftpd_pwdfile_file }}
+
+account		required	pam_permit.so
+session		required	pam_permit.so
+password	required	pam_deny.so

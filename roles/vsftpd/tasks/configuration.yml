@@ -1,0 +1,5 @@
+---
+- import_tasks: configuration/user.yml
+- import_tasks: configuration/directories.yml
+- import_tasks: configuration/vsftpd.yml
+...

@@ -1,0 +1,19 @@
+---
+packages:
+  - aptitude
+  - vim
+  - atop
+  - htop
+  - iotop
+  - iftop
+  - dstat
+  - nload
+  - tmux
+  - bind9-dnsutils
+  - bind9-host
+  - ethtool
+  - net-tools
+  - tree
+  - tcpdump
+rsyslog_service: "rsyslog.service"
+...

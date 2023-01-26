@@ -1,0 +1,8 @@
+---
+packages:
+  - "rsync"
+sshd_service: "sshd.service"
+pam_common_session_file: "/etc/pam.d/common-session"
+pam_mkhomedir_module: "pam_mkhomedir.so"
+pam_umask_module: "pam_umask.so"
+...

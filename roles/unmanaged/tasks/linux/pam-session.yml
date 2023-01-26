@@ -1,0 +1,15 @@
+---
+- name: "pam: Enabling and configuring pam_mkhomedir"
+  become: yes
+  ansible.builtin.lineinfile:
+    line: "session optional {{ pam_mkhomedir_module }} umask=0077"
+    path: "{{ pam_common_session_file }}"
+    regexp: '^session[\ \t]+.*{{ pam_mkhomedir_module }}.*'
+
+- name: "pam: Enabling pam_umask"
+  become: yes
+  ansible.builtin.lineinfile:
+    line: "session optional {{ pam_umask_module }}"
+    path: "{{ pam_common_session_file }}"
+    regexp: '^session[\ \t]+.*{{ pam_umask_module }}.*'
+...

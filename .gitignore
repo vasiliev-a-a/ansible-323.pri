@@ -1,0 +1,6 @@
+# Ignoring these:
+vault.key
+/*.yml
+
+# ... but not these:
+!.gitignore

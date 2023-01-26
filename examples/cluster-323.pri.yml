@@ -1,0 +1,9 @@
+---
+- name: "Deploying cluster `323.pri`"
+  hosts: test-1,test-2,ansible
+  roles:
+    - role: corosync
+      cluster_name: "323.pri"
+      cluster_nodes: ["test-1","test-2"]
+      cluster_witness: "ansible"
+

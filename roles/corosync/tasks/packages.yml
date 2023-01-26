@@ -1,0 +1,22 @@
+---
+- name: "packages: Installing packages on `cluster_nodes`"
+  become: yes
+  ansible.builtin.apt:
+    name: "{{ node_packages }}"
+    state: present
+    update_cache: yes
+  when:
+    - inventory_hostname in cluster_nodes
+    - (ansible_os_family | lower) == 'debian'
+
+- name: "packages: Installing packages on `cluster_witness`"
+  become: yes
+  ansible.builtin.apt:
+    name: "{{ witness_packages }}"
+    state: present
+    update_cache: yes
+  when:
+    - cluster_witness is defined
+    - inventory_hostname == cluster_witness
+    - (ansible_os_family | lower) == 'debian'
+...

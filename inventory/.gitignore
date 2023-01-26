@@ -1,0 +1,6 @@
+# Ignoring these:
+*
+
+# ... but not these:
+!00-required.yml
+!.gitignore

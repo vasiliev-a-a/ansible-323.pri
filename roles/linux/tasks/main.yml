@@ -1,0 +1,10 @@
+---
+- import_tasks: checks.yml
+
+- name: "Including OS specific variables"
+  include_vars:
+    file: "{{ ansible_os_family | lower }}.yml"
+
+- import_tasks: packages.yml
+- import_tasks: configuration.yml
+...

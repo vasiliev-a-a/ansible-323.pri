@@ -1,0 +1,53 @@
+---
+- name: "checks: Is `cluster_nodes` defined?"
+  assert:
+    fail_msg: "`cluster_nodes` must be specified."
+    that: cluster_nodes is defined
+  delegate_to: localhost
+  run_once: yes
+
+- name: "checks: Are `cluster_nodes` included in the playbook?"
+  assert:
+    fail_msg: "Node `{{ item }}` is not included in the playbook."
+    that: item in ansible_play_hosts
+  loop: "{{ cluster_nodes }}"
+  delegate_to: localhost
+  run_once: yes
+
+- name: "checks: Are `cluster_nodes` defined in the inventory?"
+  assert:
+    fail_msg: "Node `{{ item }}` is not defined in the inventory."
+    that: item in hostvars
+  loop: "{{ cluster_nodes }}"
+  delegate_to: localhost
+  run_once: yes
+
+- name: "checks: Is `cluster_witness` a single value?"
+  assert:
+    fail_msg: "`cluster_witness` must be a single value."
+    that: cluster_witness is string
+  delegate_to: localhost
+  when: cluster_witness is defined
+  run_once: yes
+
+- name: "checks: Is `cluster_witness` included in the playbook?"
+  assert:
+    fail_msg: "Node `{{ cluster_witness }}` is not included in the playbook."
+    that: cluster_witness in ansible_play_hosts
+  delegate_to: localhost
+  run_once: yes
+
+- name: "checks: Is `cluster_witness` defined in the inventory?"
+  assert:
+    fail_msg: "Node `{{ cluster_witness }}` must be defined in the inventory."
+    that: cluster_witness in hostvars
+  delegate_to: localhost
+  run_once: yes
+
+- name: "checks: Is `cluster_witness` in the cluster_nodes?"
+  assert:
+    fail_msg: "The `cluster_witness` must not be in the `cluster_nodes`"
+    that: (cluster_witness in cluster_nodes) == false
+  delegate_to: localhost
+  run_once: yes
+...

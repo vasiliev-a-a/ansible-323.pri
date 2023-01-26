@@ -1,0 +1,10 @@
+---
+node_packages:
+  - "corosync"
+  - "corosync-qdevice"
+witness_packages:
+  - "corosync-qnetd"
+corosync_service: "corosync.service"
+corosync_qdevice_service: "corosync-qdevice.service"
+corosync_qnetd_service: "corosync-qnetd.service"
+...

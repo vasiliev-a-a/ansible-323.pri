@@ -1,0 +1,38 @@
+totem { 
+	version: 2
+	cluster_name: {{ cluster_name }}
+	secauth: on
+	keyfile: /etc/corosync/authkey
+	ip_version: ipv4
+}
+quorum {
+	provider: corosync_votequorum
+{% if cluster_witness is defined %}
+	device {
+		model: net
+		votes: 1
+		net {
+			host: {{ hostvars[cluster_witness]['ansible_default_ipv4']['address'] }}
+			algorithm: ffsplit
+			tls: off
+		}
+	}
+{% endif %}
+}
+nodelist {
+{% for host in cluster_nodes %}
+	node {
+		ring0_addr: {{ hostvars[host]['ansible_default_ipv4']['address'] }}
+		nodeid: {{ hostvars[host]['ansible_default_ipv4']['address'].split('.') | last }}
+		name: {{ hostvars[host]['ansible_hostname'] }}
+		quorum_votes: 1
+	}
+{% endfor %}
+}
+logging {
+	to_stderr: yes
+	to_logfile: yes
+	to_syslog: no
+	logfile: /var/log/corosync/corosync.log
+	logfile_priority: info
+}

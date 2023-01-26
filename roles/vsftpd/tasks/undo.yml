@@ -1,0 +1,53 @@
+---
+- name: "undo: Uninstalling packages (Debian)"
+  become: yes
+  ansible.builtin.apt:
+    name: "{{ packages }}"
+    state: absent
+    update_cache: no
+    purge: yes
+  when:
+    - (ansible_os_family | lower) == 'debian'
+
+- name: "undo: Deleting service configuration (/etc/vsftpd.conf)"
+  become: yes
+  ansible.builtin.file:
+    path: "/etc/vsftpd.conf"
+    state: absent
+
+- name: "undo: Deleting drop-in configuration directory (/etc/vsftpd.conf.d/)"
+  become: yes
+  ansible.builtin.file:
+    path: "/etc/vsftpd.conf.d"
+    state: absent
+
+- name: "undo: Deleting logrotate configuration (/etc/logrotate.d/vsftpd)"
+  become: yes
+  ansible.builtin.file:
+    path: "/etc/logrotate.d/vsftpd"
+    state: absent
+
+- name: "undo: Deleting rsyslog configuration (/etc/rsyslogd.d/vsftpd.conf)"
+  become: yes
+  ansible.builtin.file:
+    path: "/etc/rsyslog.d/vsftpd.conf"
+    state: absent
+
+- name: "undo: Deleting pam configuration for vsftpd ({{ vsftpd_pam_config_file }})"
+  become: yes
+  ansible.builtin.file:
+    path: "{{ vsftpd_pam_config_file }}"
+    state: absent
+
+- name: "undo: Removing `{{ ftp_user['name'] }}` user"
+  become: yes
+  ansible.builtin.user:
+    name: "{{ ftp_user['name'] }}"
+    state: absent
+
+- name: "undo: Removing `{{ ftp_group['name'] }}` group"
+  become: yes
+  ansible.builtin.group:
+    name: "{{ ftp_group['name'] }}"
+    state: absent
+...

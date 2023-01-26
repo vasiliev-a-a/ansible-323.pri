@@ -1,0 +1,67 @@
+---
+- name: "config: Enabling `vsftpd` service"
+  become: yes
+  ansible.builtin.service:
+    name: "{{ vsftpd_service }}"
+    enabled: yes
+
+- name: "config: Creating SSL certificate"
+  become: yes
+  ansible.builtin.copy:
+    content: "{{ vsftpd_rsa_cert }}"
+    dest: "{{ vsftpd_rsa_cert_file }}"
+    mode: "0640"
+    validate: /usr/bin/openssl x509 -noout -in %s
+  when:
+    - vsftpd_rsa_cert is defined
+    - vsftpd_rsa_cert_file is defined
+  notify: "services: Restarting `vsftpd` service"
+  register: ssl_result
+  ignore_errors: yes
+
+- name: "config: Generating service configuration (/etc/vsftpd.conf)"
+  become: yes
+  ansible.builtin.template:
+    src: "./vsftpd.conf.j2"
+    dest: "/etc/vsftpd.conf"
+    mode: "0640"
+  notify: "services: Restarting `vsftpd` service"
+
+- name: "config: Generating pam configuration for vsftpd ({{ vsftpd_pam_config_file }})"
+  become: yes
+  ansible.builtin.template:
+    src: "./vsftpd-pam.j2"
+    dest: "{{ vsftpd_pam_config_file}}"
+    mode: "0640"
+
+- name: "config: Generating pwdfile for vsftpd ({{ vsftpd_pwdfile_file }})"
+  become: yes
+  ansible.builtin.template:
+    src: "./vsftpd-pwdfile.j2"
+    dest: "{{ vsftpd_pwdfile_file }}"
+    mode: "0640"
+
+- name: "config: Generating per ftp_users configuration (/etc/vsftpd.conf.d/$USER)"
+  become: yes
+  ansible.builtin.copy:
+    content: "local_root={{ ftp_root }}/{{ item['name'] }}"
+    dest: "/etc/vsftpd.conf.d/{{ item['name'] }}"
+    mode: "0640"
+  loop: "{{ ftp_users }}"
+  when: item['role'] == 'user'
+
+- name: "config: Creating logrotate configuration (/etc/logrotate.d/vsftpd)"
+  become: yes
+  ansible.builtin.template:
+    src: "./vsftpd-logrotate.j2"
+    dest: "/etc/logrotate.d/vsftpd"
+  when: stat_logrotate_d['stat']['exists']
+
+- name: "config: Creating rsyslog configuration (/etc/rsyslogd.d/vsftpd.conf)"
+  become: yes
+  ansible.builtin.template:
+    src: "./vsftpd-rsyslog.j2"
+    dest: "/etc/rsyslog.d/vsftpd.conf"
+  notify: "services: Restarting `rsyslog` service"
+  when: stat_rsyslog_d['stat']['exists']
+...

@@ -1,0 +1,52 @@
+---
+- name: "sudo: Ensuring that the drop-in config directory exists (/etc/sudoers.d)"
+  become: yes
+  ansible.builtin.file:
+    path: "/etc/sudoers.d"
+    mode: 0755
+    owner: root
+    group: root
+    state: directory
+
+- name: "sudo: Including the drop-in directory into the main config (modern syntax)"
+  become: yes
+  ansible.builtin.lineinfile:
+    insertafter: EOF
+    line: "@includedir /etc/sudoers.d"
+    path: "/etc/sudoers"
+    regexp: '^\@includedir[\ \t]+.*'
+    validate: /usr/sbin/visudo -csf %s
+  ignore_errors: yes
+
+- name: "sudo: Including the drop-in directory into the main config (old syntax)"
+  become: yes
+  ansible.builtin.lineinfile:
+    insertafter: EOF
+    line: "#includedir /etc/sudoers.d"
+    path: "/etc/sudoers"
+    regexp: '^\#includedir[\ \t]+.*'
+    validate: /usr/sbin/visudo -csf %s
+
+- name: "sudo: Enabling requiretty globally (/etc/sudoers.d/requiretty)"
+  become: yes
+  ansible.builtin.copy:
+    dest: "/etc/sudoers.d/00-requiretty"
+    owner: "root"
+    group: "root"
+    mode: 0440
+    content: |
+      Defaults requiretty
+    validate: /usr/sbin/visudo -csf %s
+
+- name: "sudo: Creating the custom configuration for ansible (/etc/sudoers.d/ansible)"
+  become: yes
+  ansible.builtin.copy:
+    dest: "/etc/sudoers.d/50-ansible"
+    owner: "root"
+    group: "root"
+    mode: 0440
+    content: |
+      Defaults: {{ ansible_account_user }} !requiretty
+      {{ ansible_account_user }} ALL=(ALL) NOPASSWD: ALL
+    validate: /usr/sbin/visudo -csf %s
+...
