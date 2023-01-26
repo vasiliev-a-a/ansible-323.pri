@@ -1,7 +1,7 @@
 ---
 - name: "accounts: Creating a user to be used by Ansible"
   become: yes
-  ansible.builtin.accounts:
+  ansible.builtin.user:
     name: "{{ ansible_account_user }}"
     comment: "Ansible service account"
     create_home: yes
