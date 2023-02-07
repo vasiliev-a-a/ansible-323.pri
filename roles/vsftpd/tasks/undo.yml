@@ -33,13 +33,15 @@
     path: "/etc/rsyslog.d/vsftpd.conf"
     state: absent
 
-- name: "undo: Deleting pam configuration for vsftpd ({{ vsftpd_pam_config_file }})"
+- name: "directories: Forcing Chroot and SFTP for members of `{{ ftp_group['name'] }}`"
   become: yes
-  ansible.builtin.file:
-    path: "{{ vsftpd_pam_config_file }}"
+  ansible.builtin.blockinfile:
+    marker: "# {mark} ANSIBLE MANAGED BLOCK: role=vsftpd"
     state: absent
+    path: "/etc/ssh/sshd_config"
+  notify: "services: Reloading OpenSSH Server service"
 
-- name: "undo: Removing `{{ ftp_user['name'] }}` user"
+- name: "undo: Removing `{{ ftp_user['name'] }}` account"
   become: yes
   ansible.builtin.user:
     name: "{{ ftp_user['name'] }}"
@@ -50,4 +52,18 @@
   ansible.builtin.group:
     name: "{{ ftp_group['name'] }}"
     state: absent
+
+- name: "undo: Removing accounts of `ftp_users`"
+  become: yes
+  ansible.builtin.user:
+    name: "{{ item['name'] }}"
+    state: absent
+  loop: "{{ ftp_users }}"
+
+- name: "undo: Removing groups of `ftp_users`"
+  become: yes
+  ansible.builtin.group:
+    name: "{{ item['name'] }}"
+    state: absent
+  loop: "{{ ftp_users }}"
 ...

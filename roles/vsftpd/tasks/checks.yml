@@ -21,10 +21,11 @@
     that:
       - item is mapping
       - item['name'] is defined
+      - item['id'] is defined
       - item['password'] is defined
       - item['role'] is defined
       - item['role'] in ['user','admin']
-    fail_msg: "`{{ item }}` has wrong format. Each user must be defined as a dictionary with the `name`, `password` and `role` fileds. `role` must be one of ['user', 'admin']."
+    fail_msg: "`{{ item }}` has wrong format. Each user must be defined as a dictionary with the `name`, `id`, `password` and `role` fileds. `role` must be one of ['user', 'admin']."
   loop: "{{ ftp_users }}"
   delegate_to: localhost
   run_once: yes

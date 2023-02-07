@@ -12,12 +12,12 @@ connect_timeout=30
 data_connection_timeout=120
 idle_session_timeout=300
 anonymous_enable=NO
-guest_enable=YES
-guest_username={{ ftp_user['name'] }}
+guest_enable=NO
 local_enable=YES
 write_enable=YES
 local_umask=0007
-virtual_use_local_privs=YES
+deny_file=.*
+hide_file=.*
 {% if ssl_result['failed'] is false %}
 force_local_logins_ssl=no
 force_local_data_ssl=no

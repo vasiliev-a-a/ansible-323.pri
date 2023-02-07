@@ -27,28 +27,13 @@
     mode: "0640"
   notify: "services: Restarting `vsftpd` service"
 
-- name: "config: Generating pam configuration for vsftpd ({{ vsftpd_pam_config_file }})"
-  become: yes
-  ansible.builtin.template:
-    src: "./vsftpd-pam.j2"
-    dest: "{{ vsftpd_pam_config_file}}"
-    mode: "0640"
-
-- name: "config: Generating pwdfile for vsftpd ({{ vsftpd_pwdfile_file }})"
-  become: yes
-  ansible.builtin.template:
-    src: "./vsftpd-pwdfile.j2"
-    dest: "{{ vsftpd_pwdfile_file }}"
-    mode: "0640"
-
-- name: "config: Generating per ftp_users configuration (/etc/vsftpd.conf.d/$USER)"
+- name: "config: Generating per `ftp_users` configuration (/etc/vsftpd.conf.d/$USER)"
   become: yes
   ansible.builtin.copy:
     content: "local_root={{ ftp_root }}/{{ item['name'] }}"
     dest: "/etc/vsftpd.conf.d/{{ item['name'] }}"
     mode: "0640"
-  loop: "{{ ftp_users }}"
-  when: item['role'] == 'user'
+  loop: "{{ ftp_users | selectattr('role','equalto','user') }}"
 
 - name: "config: Creating logrotate configuration (/etc/logrotate.d/vsftpd)"
   become: yes

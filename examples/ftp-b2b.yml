@@ -5,12 +5,15 @@
     - role: vsftpd
       ftp_users:
         - name: user1
+          id: 2001
           password: test1
           role: user
         - name: user2
+          id: 2002
           password: test2
           role: user
         - name: user3
+          id: 2003
           password: test3
           role: admin
       ftp_root: "/srv/ftproot"
