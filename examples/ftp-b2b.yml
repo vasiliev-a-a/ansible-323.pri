@@ -16,6 +16,14 @@
           id: 2003
           password: test3
           role: admin
+        - name: user4
+          id: 2004
+          password: test4
+          role: user
+        - name: user5
+          id: 2005
+          password: test5
+          role: admin
       ftp_root: "/srv/ftproot"
       vsftpd_rsa_cert_file: "/etc/vsftpd.conf.d/cert.pem"
       vsftpd_rsa_cert: |

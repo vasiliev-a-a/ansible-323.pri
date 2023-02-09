@@ -31,6 +31,16 @@
   run_once: yes
   when: ftp_users is defined
 
+- name: "checks: Are elements of the `fpt_users` unique?"
+  assert:
+    that:
+      - (ftp_users | map(attribute='name') | unique() | count()) == (ftp_users | map(attribute='name') | count())
+      - (ftp_users | map(attribute='id') | unique() | count()) == (ftp_users | map(attribute='id') | count())
+    fail_msg: "`ftp_users` contains elements with non-unique values of `id` or `name` fields"
+  delegate_to: localhost
+  run_once: yes
+  when: ftp_users is defined
+
 - name: "checks: Are we using `/etc/rsyslog.d` ?"
   stat:
     path: "/etc/rsyslog.d"
